@@ -11,8 +11,14 @@ import projects.service.ProjectService;
 public class ProjectsApp {
 
     ProjectService projectService = new ProjectService();
-
-
+    //@formatter:off
+    private List<String> operations = List.of(
+            "1) Add a project" +
+            "\n 2) List all projects" +
+            "\n 3) Select a project"        
+            );
+  //@formatter:on
+    Project curProject = null;
 
     private void processUserSelections() {
         boolean done = false;
@@ -28,6 +34,12 @@ public class ProjectsApp {
                         break;
                     case 1:
                         createProject();
+                        break;
+                    case 2:
+                        listProjects();
+                        break;
+                    case 3:
+                        selectProject();
                         break;
                     default:
                         System.out.println(
@@ -61,17 +73,30 @@ public class ProjectsApp {
 
     }
 
+    private void selectProject() {
+        listProjects();
+        Integer projectId = getIntInput("Enter the project ID");
+        curProject = null;
+        curProject = projectService.fetchProjectById(projectId);
+
+    }
+
+    private void listProjects() {
+        List<Project> listOfProjects = projectService.fetchAllProjects();
+
+        System.out.println("\n Projects:");
+        listOfProjects.forEach(projects -> System.out
+                .println(" " + projects.getProjectId() + ": " + projects.getProjectName()));
+
+    }
+
 
 
     private void exitMenu() {
         System.out.println("Exiting the menu.");
     }
 
-    //@formatter:off
-    private List<String> operations = List.of(
-            "1) Add a project"
-            );
-  //@formatter:on
+
 
     private Scanner scanner = new Scanner(System.in);
 
@@ -143,6 +168,11 @@ public class ProjectsApp {
         System.out.println("\nThese are the available selections. Press enter to quit:");
 
         operations.forEach(line -> System.out.println(" " + line));
+        if(Objects.isNull(curProject)) {
+        System.out.println("\nYou are not working with a project currently");
+        } else {
+            System.out.println("\nYou are currently working within: " + curProject);
+        }
 
     }
 }
